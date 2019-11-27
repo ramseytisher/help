@@ -1,7 +1,11 @@
-/**
- * Implement Gatsby's SSR (Server Side Rendering) APIs in this file.
- *
- * See: https://www.gatsbyjs.org/docs/ssr-apis/
- */
+// had to add this to get it to work on build
+// see https://github.com/gatsbyjs/gatsby/issues/15968 for more info
 
-// You can delete this file if you're not using it
+import React from "react"
+import { UserProvider } from "./src/context/user-context"
+
+export const wrapRootElement = ({ element }) => (
+    <UserProvider>
+        {element}
+    </UserProvider>
+)

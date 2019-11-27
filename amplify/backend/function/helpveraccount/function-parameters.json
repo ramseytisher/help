@@ -1,0 +1,11 @@
+{
+    "permissions": {
+        "storage": {
+            "helpAccount": [
+                "create",
+                "read",
+                "update"
+            ]
+        }
+    }
+}

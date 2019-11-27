@@ -1,0 +1,33 @@
+type Query {
+  listAccounts(limit: Int): AccountConnection @function(name: "helpveraccount-${env}")
+  getAccount(id: String!): Account @function(name: "helpveraccount-${env}")
+}
+
+type Mutation {
+  createAccount(input: CreateAccountInput!): Account @function(name: "helpveraccount-${env}")
+  updateAccount(input: UpdateAccountInput!): Account @function(name: "helpveraccount-${env}")
+}
+
+type AccountConnection {
+  items: [Account]
+}
+
+type Account {
+  id: ID!
+  first: String
+  last: String
+  email: String!
+  has: [String]
+}
+
+input CreateAccountInput {
+  email: String!
+}
+
+input UpdateAccountInput {
+  id: String!
+  first: String
+  last: String
+  email: String
+  has: [String]
+}

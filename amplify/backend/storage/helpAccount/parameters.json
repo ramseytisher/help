@@ -1,0 +1,5 @@
+{
+    "tableName": "helpAccount",
+    "partitionKeyName": "id",
+    "partitionKeyType": "S"
+}
