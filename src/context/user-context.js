@@ -1,46 +1,61 @@
 import React, { createContext, useState, useEffect } from "react"
-import { Auth, API, graphqlOperation } from 'aws-amplify'
+import { Auth, API, graphqlOperation } from "aws-amplify"
 
-import { 
-    getAccount as GetAccount, 
-} from '../graphql/queries'
+import { Box } from "grommet"
+
+import { verifyAccount as VerifyAccount } from "../graphql/mutations"
 
 export const UserContext = createContext()
 
 export const UserProvider = ({ children }) => {
-    const [loggedIn, setLoggedIn] = useState(false)
-    const [accountInfo, setAccountInfo] = useState({})
-    const [helloMessage, setHelloMessage] = useState('')
+  const [loggedIn, setLoggedIn] = useState(false)
+  const [accountInfo, setAccountInfo] = useState({})
 
-    useEffect(() => {
-        console.log('Effecting login')
-        Auth.currentAuthenticatedUser()
-            .then(() => setLoggedIn(true))
-            .catch(error => console.log('Error authing user: ', error))
-    }, [loggedIn])
-
-    async function getAccount() {
-        try {
-            const userId = Auth.user.username
-            console.log('userId is: ', userId)
-            const accountData = await API.graphql(graphqlOperation(GetAccount, { id: userId }))
-            // console.log('Verify is: ', verify)
-            console.log('Account data is: ', accountData)
-            setAccountInfo(accountData.data.getAccount)
-        } catch (error) {
-            console.log('error getting account info', error)
-        }
+  useEffect(() => {
+    if (loggedIn) {
+      Auth.currentAuthenticatedUser()
+        .then(() => setLoggedIn(true))
+        .then(() => verifyAccount())
+        .catch(error => console.log("Error authing user: ", error))
     }
+  }, [loggedIn])
 
-    const handleLogout = () => {
-        Auth.signOut()
-        .then(() => setLoggedIn(false))
+  async function verifyAccount() {
+    try {
+      const user = Auth.user
+      const userInfo = {
+        id: user.username,
+        email: user.attributes.email,
+      }
+      const accountData = await API.graphql(
+        graphqlOperation(VerifyAccount, { input: userInfo })
+      )
+      setAccountInfo(accountData.data.verifyAccount)
+    } catch (error) {
+      console.log("error getting account info", error)
     }
+  }
 
-    return (
-        <UserContext.Provider value={{ loggedIn, accountInfo, setLoggedIn, handleLogout }}>
-            {children}
-            <pre>{JSON.stringify(Auth.user, null, 2)}</pre>
-        </UserContext.Provider>
-    )
+  const handleLogout = () => {
+    Auth.signOut().then(() => {
+      setLoggedIn(false)
+      setAccountInfo({})
+    })
+  }
+
+  return (
+    <UserContext.Provider
+      value={{ loggedIn, accountInfo, setLoggedIn, handleLogout }}
+    >
+      {children}
+      <Box direction="row">
+        <Box width="50vw">
+          <pre>{JSON.stringify(Auth.user, null, 2)}</pre>
+        </Box>
+        <Box width="50vw">
+          <pre>{JSON.stringify(accountInfo, null, 2)}</pre>
+        </Box>
+      </Box>
+    </UserContext.Provider>
+  )
 }

@@ -44,17 +44,28 @@ const getAccount = async event => {
   return account
 }
 
-const createAccount = async event => {
-  const item = { ...event.arguments.input, id: uuid() }
-
+const verifyAccount = async event => {
+  console.log('Event: ', event.arguments)
   const params = {
     TableName: storageHelpAccountName,
-    Item: item
+    Key: {
+      id: event.arguments.input.id
+    }
   }
+  const { Item: account } = await docClient.get(params).promise()
 
-  await docClient.put(params).promise()
+  if(!account) {
+    const newAccount = { ...event.arguments.input, id: event.arguments.input.id, email: event.arguments.input.email}
+    const newParams = {
+      TableName: storageHelpAccountName,
+      Item: newAccount
+    }
 
-  return item
+    await docClient.put(newParams).promise()
+
+    return newAccount
+  }
+  return account
 }
 
 const updateAccount = async event => {
@@ -63,17 +74,18 @@ const updateAccount = async event => {
     Key: {
       id: event.arguments.id
     },
-    UpdateExpression: "set first = :first, last = :last, email = :email",
+    UpdateExpression: "set first = :first, last = :last, email = :email, emailAllow = :emailAllow",
     ExpressionAttributeValues: {
       ":first": event.arguments.input.first,
       ":last": event.arguments.input.last,
-      ":email": event.arguments.input.email
+      ":email": event.arguments.input.email,
+      ":emailAllow": event.arguments.input.emailAllow
     }
   }
 
   const { Attributes: updatedAccount } = await docClient.update(params).promise()
 
-  return updateAccount
+  return updatedAccount
 }
 
 exports.handler = async function (event, context) { //eslint-disable-line
@@ -89,8 +101,8 @@ exports.handler = async function (event, context) { //eslint-disable-line
         context.done(null, response)
         break
       }
-      case "createAccount": {
-        const response = await createAccount(event)
+      case "verifyAccount": {
+        const response = await verifyAccount(event)
         context.done(null, response)
         break
       }

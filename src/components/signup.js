@@ -1,6 +1,8 @@
 import React, { Component, useState, useEffect } from "react"
 import { Auth } from "aws-amplify"
 
+import { Box } from 'grommet'
+
 export default ({ authState, onStateChange }) => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -34,6 +36,7 @@ export default ({ authState, onStateChange }) => {
     return (
       <form onSubmit={handleSubmit}>
         <label>UserName</label>
+        <Box>
         <input
           type="text"
           name="username"
@@ -57,6 +60,7 @@ export default ({ authState, onStateChange }) => {
           name="phone_number"
           onChange={e => setPhone_number(e.target.value)}
         />
+        </Box>
         <button>Sign Up</button>
         <button onClick={() => onStateChange('signIn', {})}>Back to Sign In</button>
       </form>

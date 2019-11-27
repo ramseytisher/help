@@ -6,6 +6,7 @@ type Query {
 type Mutation {
   createAccount(input: CreateAccountInput!): Account @function(name: "helpveraccount-${env}")
   updateAccount(input: UpdateAccountInput!): Account @function(name: "helpveraccount-${env}")
+  verifyAccount(input: VerifyAccountInput!): Account @function(name: "helpveraccount=${env}")
 }
 
 type AccountConnection {
@@ -17,6 +18,7 @@ type Account {
   first: String
   last: String
   email: String!
+  emailAllow: Boolean!
   has: [String]
 }
 
@@ -29,5 +31,11 @@ input UpdateAccountInput {
   first: String
   last: String
   email: String
+  emailAllow: Boolean
   has: [String]
+}
+
+input VerifyAccountInput {
+  id: String!
+  email: String!
 }

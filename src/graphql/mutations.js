@@ -21,3 +21,13 @@ export const updateAccount = `mutation UpdateAccount($input: UpdateAccountInput!
   }
 }
 `;
+export const verifyAccount = `mutation VerifyAccount($input: VerifyAccountInput!) {
+  verifyAccount(input: $input) {
+    id
+    first
+    last
+    email
+    has
+  }
+}
+`;

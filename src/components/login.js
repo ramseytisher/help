@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react"
 import { Authenticator, SignIn, SignUp } from "aws-amplify-react"
 import { Link } from "gatsby"
 
-import SignUpForm from "./signUp"
+// import SignUpForm from "./signUp"
 
 import { Box, Button, Layer } from "grommet"
 
@@ -12,8 +12,6 @@ export default () => {
   const [show, setShow] = useState(false)
 
   const { loggedIn, setLoggedIn, handleLogout } = useContext(UserContext)
-
-  console.log("Logged in?", loggedIn)
 
   if (loggedIn) {
     return (
@@ -35,12 +33,17 @@ export default () => {
           onEsc={() => setShow(false)}
           onClickOutside={() => setShow(false)}
         >
-          <Authenticator 
+          {/* <Authenticator 
             hide={[SignUp]}
             onStateChange={authState => authState === 'signedIn' && setLoggedIn(true)}
             >
             <SignUpForm override={'SignUp'} />
-          </Authenticator>
+          </Authenticator> */}
+          <Authenticator
+            onStateChange={authState =>
+              authState === "signedIn" && setLoggedIn(true)
+            }
+          />
         </Layer>
       )}
     </Box>
